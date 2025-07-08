@@ -1,110 +1,59 @@
-"use client";
+import React from "react";
+import { Sun, Moon } from "lucide-react";
 
-import { ChevronLeft, Moon, Sun, Triangle } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-
-function isThemeSetToDark() {
-  if (window == undefined) return;
-
-  return (
-    localStorage.theme === "dark" ||
-    (!("theme" in localStorage) &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches)
-  );
+interface HeaderProps {
+  isDarkMode?: boolean;
+  onToggleTheme?: () => void;
 }
 
-export default function Header() {
-  const path = usePathname();
-  const isHome = path === "/";
-  const [isDarkMode, setIsDarkMode] = useState(isThemeSetToDark());
-
-  useEffect(() => {
-    if (isThemeSetToDark()) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    if (isDarkMode) {
-      localStorage.theme = "light";
-      document.documentElement.classList.remove("dark");
-      setIsDarkMode(false);
-    } else {
-      localStorage.theme = "dark";
-      document.documentElement.classList.add("dark");
-      setIsDarkMode(true);
-    }
-  };
+const Header: React.FC<HeaderProps> = ({
+  isDarkMode = true,
+  onToggleTheme,
+}) => {
+  const navLinks = [
+    { href: "/projects", label: "sobre" },
+    { href: "/articles", label: "artigos" },
+    { href: "/about", label: "projetos" },
+  ];
 
   return (
-    <header className="mx-auto max-w-prose py-8 max-sm:pt-4">
-      <nav className="flex items-center justify-between max-sm:flex-col max-sm:gap-6">
-        {isHome ? (
-          <div>
-            <div className="flex flex-col max-sm:items-center">
-              Luke Berry
-              <span className="text-zinc-500 dark:text-zinc-400">
-                Software Engineer
-              </span>
-            </div>
-          </div>
-        ) : (
-          <Link
-            className="group relative -m-12 -my-2 -mr-4 flex items-center rounded py-2 pl-12 pr-4 ring-1 ring-sky-500 ring-opacity-0 transition-all max-sm:text-center sm:hover:ring-opacity-100 dark:ring-sky-600 dark:ring-opacity-0"
-            href="/"
-          >
-            <div className="absolute left-1 flex size-4 h-full w-12 items-center px-2">
-              <ChevronLeft />
-            </div>
-            <div className="flex flex-col max-sm:items-center">
-              Luke Berry
-              <span className="text-zinc-500 dark:text-zinc-400">
-                Software Engineer
-              </span>
-            </div>
-          </Link>
-        )}
-        <div className="flex items-center gap-4">
+    <header className="fixed left-0 top-0 z-50 w-full bg-black px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between">
+        {/* Nome + Título */}
+        <div>
+          <h1 className="text-base font-semibold text-white">Beatriz Soares</h1>
+          <p className="text-sm text-neutral-500">Frontend Developer</p>
+        </div>
+
+        {/* Navegação + Botão Tema */}
+        <div className="flex items-center gap-8">
           <button
-            onClick={() => toggleTheme()}
-            className="group relative flex items-center"
+            onClick={onToggleTheme}
+            className="rounded-lg border border-neutral-800 bg-neutral-900 p-2 transition hover:border-neutral-700 hover:bg-neutral-800"
+            aria-label="Alternar tema"
           >
             {isDarkMode ? (
-              <Moon className="size-5 fill-gray-700 transition-all sm:hover:-rotate-12 sm:hover:scale-110" />
+              <Sun className="h-4 w-4 text-neutral-400" />
             ) : (
-              <Sun className="size-5 fill-yellow-300 transition-all sm:hover:rotate-45 sm:hover:scale-110" />
+              <Moon className="h-4 w-4 text-neutral-400" />
             )}
           </button>
-          <Link
-            className="group relative rounded px-2 py-px ring-1 ring-sky-500 ring-opacity-0 transition-all sm:hover:ring-opacity-100 dark:ring-sky-600 dark:ring-opacity-0"
-            href="/projects"
-            data-is-current-path={path === "/projects"}
-          >
-            /projects
-            <Triangle className="absolute left-1/2 mt-1 hidden size-2 fill-sky-500 text-zinc-800 group-data-[is-current-path=true]:block dark:fill-sky-600 dark:text-transparent" />
-          </Link>
-          <Link
-            className="group relative rounded px-2 py-px ring-1 ring-sky-500 ring-opacity-0 transition-all sm:hover:ring-opacity-100 dark:ring-sky-600 dark:ring-opacity-0"
-            href="/articles"
-            data-is-current-path={path.startsWith("/articles")}
-          >
-            /articles
-            <Triangle className="absolute left-1/2 mt-1 hidden size-2 fill-sky-500 text-zinc-800 group-data-[is-current-path=true]:block dark:fill-sky-600 dark:text-transparent" />
-          </Link>
-          <Link
-            className="group relative rounded px-2 py-px ring-1 ring-sky-500 ring-opacity-0 transition-all sm:hover:ring-opacity-100 dark:ring-sky-600 dark:ring-opacity-0"
-            href="/about"
-            data-is-current-path={path === "/about"}
-          >
-            /about
-            <Triangle className="absolute left-1/2 mt-1 hidden size-2 fill-sky-500 text-zinc-800 group-data-[is-current-path=true]:block dark:fill-sky-600 dark:text-transparent" />
-          </Link>
+
+          <nav className="flex items-center gap-6 text-sm text-neutral-400">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-white"
+              >
+                /{link.label}
+              </a>
+            ))}
+          </nav>
         </div>
-      </nav>
+      </div>
     </header>
   );
-}
+};
+
+export default Header;
